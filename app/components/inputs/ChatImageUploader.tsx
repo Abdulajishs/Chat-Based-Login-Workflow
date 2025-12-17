@@ -1,9 +1,9 @@
 
-interface ImageInputFormProps {
+interface ChatImageUploaderProps {
     onSubmit: (input: string | File) => void;
 }
 
-export default function ImageInputForm({ onSubmit }: ImageInputFormProps) {
+export default function ChatImageUploader({ onSubmit }: ChatImageUploaderProps) {
     return (
         <input
             type="file"

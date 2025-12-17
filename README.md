@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chat Workflow Application
 
-## Getting Started
+This application handles a loan application process through a chat interface. It uses a "State Machine" to manage where the user is in the process.
 
-First, run the development server:
+## Workflow States (Where the user is)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Here is a list of all the possible stages a user can be in:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **unauthenticated**: The user has just started and hasn't logged in yet.
+- **enteringPhone**: The user is asked to enter their mobile number.
+- **sendingOtp**: The system is currently sending a One-Time Password (OTP) to the mobile number.
+- **waitingForOtp**: The OTP has been sent, and the system is waiting for the user to enter it.
+- **validatingOtp**: The user entered the OTP, and the system is checking if it is correct.
+- **otpFailed**: The OTP entered was incorrect. The user can try again or ask to resend the OTP.
+- **authenticated**: The user has successfully logged in.
+- **vehiclebrandselection**: The user is selecting the brand of their vehicle (e.g., Toyota, Honda).
+- **vehiclemodelselection**: The user is selecting the specific model of the vehicle based on the brand.
+- **vehiclevariantselection**: The user is selecting the variant (trim) of the vehicle model.
+- **uploadpan**: The user is asked to upload their PAN card document.
+- **uploadesign**: The user is asked to upload their E-sign document.
+- **applicationsuccess**: The detailed application process is complete, and the loan application is submitted.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Workflow Events (What happens)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+These are the actions or events that move the user from one state to another:
 
-## Learn More
+- **LOGOUT**: The user logs out, and the system goes back to the start (`unauthenticated`).
+- **HYDRATE_STATE**: restoring the user's previous session from memory.
+- **ENTER_PHONE**: The user submits their phone number.
+- **SEND_OTP**: The system successfully sends the OTP message.
+- **VALIDATE_OTP**: The user submits the OTP code they received.
+- **OTP_SUCCESS**: The system confirms the OTP is correct.
+- **OTP_FAIL**: The system determines the OTP is incorrect.
+- **RESEND_OTP**: The user requests to send the OTP again.
+- **LOGIN_SUCCESS**: The login process is finished, and the user can start the application.
+- **SELECT_OPTION**: The user picks an option from a list (used for Vehicle Brand, Model, and Variant).
+- **PAN_UPLOADED**: The user successfully uploads their PAN card.
+- **ESIGN_UPLOADED**: The user successfully uploads their E-sign document.
 
-To learn more about Next.js, take a look at the following resources:
+## How it works (The Path)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  **Start**: User arrives -> enters phone number -> gets OTP -> verifies OTP.
+2.  **Selection**: User selects Vehicle Brand -> Vehicle Model -> Vehicle Variant.
+3.  **Documents**: User uploads PAN Card -> uploads E-sign.
+4.  **Finish**: Application submitted successfully!

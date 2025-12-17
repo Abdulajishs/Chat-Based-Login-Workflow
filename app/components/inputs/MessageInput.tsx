@@ -1,9 +1,9 @@
 import { ChatInputProps } from "../chat/ChatInput"
 
-export default function DataInputForm({ state, onSubmit }: ChatInputProps) {
+export default function MessageInput({ state, onSubmit }: ChatInputProps) {
     return (
         <form
-            className="p-3 border-t flex gap-2"
+            className="p-3 border-t flex gap-2 h-[70px]"
             onSubmit={(e) => {
                 e.preventDefault();
                 const value = e.currentTarget.input.value;

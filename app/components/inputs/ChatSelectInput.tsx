@@ -1,11 +1,11 @@
 
-interface SelectInputProps {
+interface ChatSelectInputProps {
     options: string[];
     onSelect: (value: string) => void;
 }
 
 
-export default function SelectInput({ options, onSelect }: SelectInputProps) {
+export default function ChatSelectInput({ options, onSelect }: ChatSelectInputProps) {
     return (
         <select
             className="p-3 border rounded bg-gray-600 text-white w-full"
