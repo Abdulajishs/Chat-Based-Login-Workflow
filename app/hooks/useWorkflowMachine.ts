@@ -2,30 +2,12 @@
 
 import { useEffect, useReducer, useState } from "react";
 import { WorkflowEvent, WorkflowState, STORAGE_KEYS } from "../types/auth";
+import {SYSTEM_MESSAGES} from "../config/workflowConfig"
 
 export type ChatMessage = {
     from: "system" | "user";
     text: string;
 };
-
-// system message based on state
-const SYSTEM_MESSAGES: Record<WorkflowState, string | null> = {
-    unauthenticated: null,
-    enteringPhone: "Please enter your mobile number",
-    sendingOtp: "Sending OTP...",
-    waitingForOtp: "OTP sent. Please enter OTP",
-    validatingOtp: "Validating OTP...",
-    otpFailed: "Incorrect OTP. Type 'resend' to get a new OTP, or enter OTP again.",
-    authenticated: "Login successful",
-    vehiclebrandselection: "Select vehicle brand",
-    vehiclemodelselection: "Select vehicle model",
-    vehiclevariantselection: "Select vehicle variant",
-    uploadpan: "Please upload your PAN card",
-    uploadesign: "Please upload your E-sign document",
-    applicationsuccess: "Application submitted successfully. The loan id for the application is ID: 8563427 ",
-};
-
-
 
 function reducer(state: WorkflowState, event: WorkflowEvent): WorkflowState {
     if (event.type === "LOGOUT") return "unauthenticated";
