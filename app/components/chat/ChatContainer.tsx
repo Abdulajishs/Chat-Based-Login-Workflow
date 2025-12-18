@@ -5,6 +5,9 @@ export function ChatContainer({
   state,
   messages,
   sendUserMessage,
+  vehicleData,
+  setVehicleData,
+  setWorkflowState,
 }: any) {
   return (
     <div className="h-screen flex justify-center bg-gray-600">
@@ -13,6 +16,9 @@ export function ChatContainer({
           messages={messages}
           state={state}
           onInteract={sendUserMessage}
+          vehicleData={vehicleData}
+          setVehicleData={setVehicleData}
+          setWorkflowState={setWorkflowState}
         />
         <ChatInput state={state} onSubmit={sendUserMessage} />
       </div>

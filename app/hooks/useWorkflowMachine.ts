@@ -2,11 +2,14 @@
 
 import { useEffect, useReducer, useState } from "react";
 import { WorkflowEvent, WorkflowState, STORAGE_KEYS } from "../types/auth";
-import {SYSTEM_MESSAGES} from "../config/workflowConfig"
+import { SYSTEM_MESSAGES } from "../config/workflowConfig"
+import { phoneSchema, otpSchema } from "../utils/validation";
 
 export type ChatMessage = {
     from: "system" | "user";
-    text: string;
+    text?: string;
+    type?: "VEHICLE_SELECTION";
+    isError?: boolean;
 };
 
 function reducer(state: WorkflowState, event: WorkflowEvent): WorkflowState {
@@ -78,6 +81,11 @@ export function useWorkflowMachine() {
     const [state, dispatch] = useReducer(reducer, "unauthenticated");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [hydrated, setHydrated] = useState(false);
+    const [vehicleData, setVehicleData] = useState({
+        brand: "",
+        model: "",
+        variant: "",
+    });
 
     //After hydration, local storage restore
     useEffect(() => {
@@ -156,9 +164,26 @@ export function useWorkflowMachine() {
         setMessages((prev) => {
             const last = prev.at(-1);
             if (last?.from === "system" && last?.text === msg) return prev;
-            return [...prev, { from: "system", text: msg }];
+            return [...prev, {
+                from: "system",
+                text: msg,
+                isError: state === "otpFailed",
+            }];
         });
     }, [state, hydrated]);
+
+     // Add a system with type VEHICLE_SELECTION 
+    useEffect(() => {
+        if (!hydrated) return;
+
+        if (state === "vehiclebrandselection") {
+            setMessages(prev => {
+                if (prev.some(m => m.type === "VEHICLE_SELECTION")) return prev;
+                return [...prev, { from: "system", type: "VEHICLE_SELECTION" }];
+            });
+        }
+    }, [state, hydrated]);
+
 
     useEffect(() => {
         if (!hydrated) return;
@@ -168,17 +193,43 @@ export function useWorkflowMachine() {
         );
     }, [messages, hydrated]);
 
+
     //Based on User Interaction
     function sendUserMessage(input: string | File) {
+        let shouldAddMessage = true;
+        let messageText = "";
+        let messageFrom: "user" | "system" = "user";
 
         if (input instanceof File) {
-            setMessages((prev) => [...prev, { from: "user", text: `Uploaded: ${input.name}` }]);
+            messageText = `Uploaded: ${input.name}`;
         } else {
-            setMessages((prev) => [...prev, { from: "user", text: String(input) }]);
+            messageText = String(input);
+        }
+
+        //vehile user messages update here 
+        if (
+            state === "vehiclebrandselection" ||
+            state === "vehiclemodelselection"
+        ) {
+            shouldAddMessage = false;
+        } else if (state === "vehiclevariantselection") {
+            const variant = String(input).trim();
+            messageText = `Brand: ${vehicleData.brand} - Model: ${vehicleData.model} - Variant:${variant}`;
+        }
+
+        if (shouldAddMessage) {
+            setMessages((prev) => [...prev, { from: messageFrom, text: messageText }]);
         }
 
         if (state === "enteringPhone") {
             const phone = String(input).trim();
+            const validation = phoneSchema.safeParse(phone);
+
+            if (!validation.success) {
+                setMessages((prev) => [...prev, { from: "system", text: validation.error.issues[0].message, isError: true }]);
+                return;
+            }
+
             if (phone) dispatch({ type: "ENTER_PHONE", phone });
         }
 
@@ -187,6 +238,13 @@ export function useWorkflowMachine() {
 
             if (state === "otpFailed" && text.toLowerCase() === "resend") {
                 dispatch({ type: "RESEND_OTP" });
+                return;
+            }
+
+            // text validation, resend or any text
+            const validation = otpSchema.safeParse(text);
+            if (!validation.success) {
+                setMessages((prev) => [...prev, { from: "system", text: validation.error.issues[0].message, isError: true }]);
                 return;
             }
 
@@ -205,7 +263,15 @@ export function useWorkflowMachine() {
             state === "vehiclevariantselection"
         ) {
             if (typeof input === "string" && input.trim()) {
-                dispatch({ type: "SELECT_OPTION", payload: input });
+                const val = input.trim();
+                if (state === "vehiclebrandselection") {
+                    setVehicleData(prev => ({ ...prev, brand: val, model: "", variant: "" }));
+                } else if (state === "vehiclemodelselection") {
+                    setVehicleData(prev => ({ ...prev, model: val, variant: "" }));
+                } else if (state === "vehiclevariantselection") {
+                    setVehicleData(prev => ({ ...prev, variant: val }));
+                }
+                dispatch({ type: "SELECT_OPTION", payload: val });
             }
         }
 
@@ -225,5 +291,9 @@ export function useWorkflowMachine() {
         }
     }
 
-    return { state, messages, sendUserMessage };
+    const setWorkflowState = (newState: WorkflowState) => {
+        dispatch({ type: "HYDRATE_STATE", payload: newState });
+    };
+
+    return { state, messages, sendUserMessage, vehicleData, setVehicleData, setWorkflowState };
 }

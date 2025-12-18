@@ -12,7 +12,7 @@ export default function ChatSelectInput({ options, onSelect }: ChatSelectInputPr
             defaultValue=""
             onChange={(e) => {
                 const value = e.target.value;
-                console.log(value,"value")
+                console.log(value, "value")
                 if (value) onSelect(value);
             }}
         >

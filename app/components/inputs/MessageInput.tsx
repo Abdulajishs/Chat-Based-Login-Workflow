@@ -16,7 +16,7 @@ export default function MessageInput({ state, onSubmit }: ChatInputProps) {
                 name="input"
                 type="text"
                 inputMode={
-                    state === "enteringPhone" || state === "waitingForOtp"
+                    state === "enteringPhone"
                         ? "numeric"
                         : "text"
                 }
@@ -30,7 +30,7 @@ export default function MessageInput({ state, onSubmit }: ChatInputProps) {
                 maxLength={
                     state === "enteringPhone"
                         ? 10
-                        : state === "waitingForOtp"
+                        : state === "waitingForOtp" 
                             ? 6
                             : undefined
                 }
