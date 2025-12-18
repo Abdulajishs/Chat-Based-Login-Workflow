@@ -1,0 +1,20 @@
+import { configureStore } from "@reduxjs/toolkit";
+import workflowReducer from "./workflow/workflowSlice";
+import { STORAGE_KEYS } from "@/types/auth";
+
+export const store = configureStore({
+    reducer: {
+        workflow: workflowReducer,
+    }
+})
+
+if (typeof window !== "undefined") {
+    store.subscribe(() => {
+        const state = store.getState().workflow;
+        localStorage.setItem(STORAGE_KEYS.WORKFLOW_STATE, state.state);
+        localStorage.setItem(STORAGE_KEYS.WORKFLOW_MESSAGES, JSON.stringify(state.messages));
+    });
+}
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

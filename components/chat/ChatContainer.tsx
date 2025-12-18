@@ -1,5 +1,5 @@
-import { MessageList } from "./MessageList";
-import { ChatInput } from "./ChatInput";
+import { MessageList } from "@/components/chat/MessageList";
+import { ChatInput } from "@/components/chat/ChatInput";
 
 export function ChatContainer({
   state,

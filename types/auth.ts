@@ -1,4 +1,3 @@
-
 export type WorkflowState =
     | "unauthenticated"
     | "enteringPhone"
@@ -30,8 +29,16 @@ export type WorkflowEvent =
 
 
 
+
 export const STORAGE_KEYS = {
     WORKFLOW_MESSAGES: "workflow_messages",
     WORKFLOW_STATE: "workflow_state",
+};
+
+export type ChatMessage = {
+    from: "system" | "user";
+    text?: string;
+    type?: "VEHICLE_SELECTION";
+    isError?: boolean;
 };
 

@@ -1,4 +1,4 @@
-import { WorkflowState } from "../types/auth";
+import { WorkflowState } from "@/types/auth";
 
 export const SYSTEM_MESSAGES: Record<WorkflowState, string | null> = {
     unauthenticated: null,

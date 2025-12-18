@@ -1,8 +1,8 @@
-import { ChatMessage } from "@/app/hooks/useWorkflowMachine";
+import { ChatMessage } from "@/types/auth";
 import { useEffect, useRef } from "react";
-import { WorkflowState } from "@/app/types/auth";
-import ChatImageUploader from "../inputs/ChatImageUploader";
-import VehicleSelection from "../inputs/VehicleSelection";
+import { WorkflowState } from "@/types/auth";
+import ChatImageUploader from "@/components/inputs/ChatImageUploader";
+import VehicleSelection from "@/components/inputs/VehicleSelection";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -70,10 +70,10 @@ export function MessageList({
           <div
             key={`${message.from}-${index}`}
             className={`p-2 rounded max-w-[80%] ${message.from === "system"
-                ? message.isError
-                  ? "bg-red-100 text-red-600"
-                  : "bg-gray-200 text-black"
-                : "bg-blue-600 text-white ml-auto"
+              ? message.isError
+                ? "bg-red-100 text-red-600"
+                : "bg-gray-200 text-black"
+              : "bg-blue-600 text-white ml-auto"
               }`}
           >
             {message.text}

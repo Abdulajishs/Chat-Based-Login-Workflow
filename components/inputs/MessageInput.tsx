@@ -1,4 +1,4 @@
-import { ChatInputProps } from "../chat/ChatInput"
+import { ChatInputProps } from "@/components/chat/ChatInput"
 
 export default function MessageInput({ state, onSubmit }: ChatInputProps) {
     return (

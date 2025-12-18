@@ -1,5 +1,5 @@
-import { WorkflowState } from "@/app/types/auth";
-import MessageInput from "../inputs/MessageInput";
+import { WorkflowState } from "@/types/auth";
+import MessageInput from "@/components/inputs/MessageInput";
 
 export interface ChatInputProps {
   state: WorkflowState;

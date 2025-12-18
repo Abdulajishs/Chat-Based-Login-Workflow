@@ -1,6 +1,6 @@
 
-import { WorkflowState } from "@/app/types/auth";
-import { VEHICLE_OPTIONS } from "@/app/types/vehicles";
+import { WorkflowState } from "@/types/auth";
+import { VEHICLE_OPTIONS } from "@/types/vehicles";
 import { ChangeEvent } from "react";
 
 interface VehicleSelectionProps {
