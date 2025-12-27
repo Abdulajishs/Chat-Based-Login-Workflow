@@ -1,8 +1,8 @@
 import { ChatMessage } from "@/types/auth";
 import { useEffect, useRef } from "react";
 import { WorkflowState } from "@/types/auth";
-import ChatImageUploader from "@/components/inputs/ChatImageUploader";
-import VehicleSelection from "@/components/inputs/VehicleSelection";
+import ChatImageUploader from "@/components/inputs/chat-image-uploader";
+import VehicleSelection from "@/components/inputs/vehicle-selection";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -28,11 +28,11 @@ export function MessageList({
   }, [messages, state]);
 
   const renderActiveInput = () => {
-    if (state === "sendingOtp") {
+    if (state === "sendingOtp" || state === "validatingOtp") {
       return (
         <div className="flex items-center gap-2 text-gray-600 text-sm">
           <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-          <span>Sending OTP...</span>
+          <span>{state === "sendingOtp" ? "Sending OTP..." : "Validating OTP..."}</span>
         </div>
       );
     }

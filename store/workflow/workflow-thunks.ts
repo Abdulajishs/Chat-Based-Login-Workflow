@@ -10,7 +10,7 @@ import {
     panUploaded,
     esignUploaded,
     logout
-} from "./workflowSlice";
+} from "./workflow-slice";
 import { STORAGE_KEYS } from "@/types/auth";
 import { phoneSchema, otpSchema } from "@/utils/validation";
 

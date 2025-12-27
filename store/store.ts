@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import workflowReducer from "./workflow/workflowSlice";
+import workflowReducer from "./workflow/workflow-slice";
 import { STORAGE_KEYS } from "@/types/auth";
 
 export const store = configureStore({

@@ -1,45 +1,105 @@
 # Chat Workflow Application
 
-This application handles a loan application process through a chat interface. It uses a "State Machine" to manage where the user is in the process.
+This project implements a conversational loan application interface using Next.js. I integrates **Novu** for push notifications. It features a state-driven chat workflow, robust form inputs (like vehicle selection), and file upload capabilities with image editing.
 
-## Workflow States (Where the user is)
+---
 
-Here is a list of all the possible stages a user can be in:
+## 1. Novu Implementation & Frontend Architecture (Deep Dive)
 
-- **unauthenticated**: The user has just started and hasn't logged in yet.
-- **enteringPhone**: The user is asked to enter their mobile number.
-- **sendingOtp**: The system is currently sending a One-Time Password (OTP) to the mobile number.
-- **waitingForOtp**: The OTP has been sent, and the system is waiting for the user to enter it.
-- **validatingOtp**: The user entered the OTP, and the system is checking if it is correct.
-- **otpFailed**: The OTP entered was incorrect. The user can try again or ask to resend the OTP.
-- **authenticated**: The user has successfully logged in.
-- **vehiclebrandselection**: The user is selecting the brand of their vehicle (e.g., Toyota, Honda).
-- **vehiclemodelselection**: The user is selecting the specific model of the vehicle based on the brand.
-- **vehiclevariantselection**: The user is selecting the variant (trim) of the vehicle model.
-- **uploadpan**: The user is asked to upload their PAN card document.
-- **uploadesign**: The user is asked to upload their E-sign document.
-- **applicationsuccess**: The detailed application process is complete, and the loan application is submitted.
+This section details the Push Notification system using Novu and Firebase Cloud Messaging (FCM).
 
-## Workflow Events (What happens)
+### The Push Notification Architecture
+To successfully deliver a notification to a user's device, the architecture relies on three critical components working in tandem:
+1.  **Permission**: The user authorization to receive alerts.
+2.  **Addressing (FCM Token)**: A unique identifier for the specific browser/device session.
+3.  **Background Listener (Service Worker)**: A dormant script that handles message delivery when the application tab is closed or inactive.
 
-These are the actions or events that move the user from one state to another:
+### Component Implementation Breakdown
 
-- **LOGOUT**: The user logs out, and the system goes back to the start (`unauthenticated`).
-- **HYDRATE_STATE**: restoring the user's previous session from memory.
-- **ENTER_PHONE**: The user submits their phone number.
-- **SEND_OTP**: The system successfully sends the OTP message.
-- **VALIDATE_OTP**: The user submits the OTP code they received.
-- **OTP_SUCCESS**: The system confirms the OTP is correct.
-- **OTP_FAIL**: The system determines the OTP is incorrect.
-- **RESEND_OTP**: The user requests to send the OTP again.
-- **LOGIN_SUCCESS**: The login process is finished, and the user can start the application.
-- **SELECT_OPTION**: The user picks an option from a list (used for Vehicle Brand, Model, and Variant).
-- **PAN_UPLOADED**: The user successfully uploads their PAN card.
-- **ESIGN_UPLOADED**: The user successfully uploads their E-sign document.
+#### 1. Configuration Layer: `lib/firebase.ts`
+**Purpose**: Establishes the connection to the Firebase Interface.
+This module uses the `firebase/messaging` library to initialize the application instance. It exports a singleton `messaging` function acting as the primary gateway for token retrieval.
+```typescript
+import { initializeApp } from 'firebase/app';
+import { getMessaging } from 'firebase/messaging';
 
-## How it works (The Path)
+// Initialize the app with keys (API Key, Project ID)
+const app = initializeApp(FIREBASE_CONFIG);
+// Export the messaging instance so other files can use it to get tokens
+export const messaging = async () => ...
+```
 
-1.  **Start**: User arrives -> enters phone number -> gets OTP -> verifies OTP.
-2.  **Selection**: User selects Vehicle Brand -> Vehicle Model -> Vehicle Variant.
-3.  **Documents**: User uploads PAN Card -> uploads E-sign.
-4.  **Finish**: Application submitted successfully!
+#### 2. Client-Side Integration: `components/novu/novu-integration.tsx`
+**Purpose**: Manages the lifecycle of user registration and token exchange.
+This React component mounts on application load to execute the registration flow:
+
+**Key Imports & Dependencies**:
+- `getToken` (from `firebase/messaging`): Communicates with Firebase servers to generate the client-specific token.
+- `NovuProvider` (from `@novu/notification-center`): Provides the context for the Novu inbox UI.
+
+**Execution Flow**:
+1.  **`Notification.requestPermission()`**: Invokes the browser's native permission dialog.
+2.  **`getToken(...)`**: Upon approval, retrieves the alphanumeric FCM Token (e.g., `f7a3...`).
+3.  **`registerFcmToken(...)`**: Transmits this token to the backend, effectively linking "User X" to "Device Y" within the Novu system.
+
+#### 3. Background Handler: `public/firebase-messaging-sw.js`
+**Purpose**: Ensures delivery reliability for offline or background states.
+This is a **Service Worker**, a script that runs specifically in the browser's background thread, independent of the main application interface.
+
+**Operational Logic**:
+- **`importScripts`**: Dynamically loads Firebase SDKs from a CDN, as Service Workers operate outside the standard webpack bundle environment.
+- **`Automatic Display`**: The imported Firebase SDK automatically handles displaying notifications when the app is in the background. No manual `onBackgroundMessage` handler is required.
+- **`notificationclick`**: Catches user interactions with the system toast (e.g., clicking the notification), allowing the worker to refocus the tab or navigate to a specific URL.
+
+### The Lifecycle of a Push Notification
+The complete data flow for a delivered notification is as follows:
+
+1.  **Initialization**: User visits the site -> `NovuIntegration.tsx` executes -> Permissions granted -> Token generated.
+2.  **Registration**: The Token is stored in the Novu subscriber profile.
+3.  **Trigger Event**: A system event occurs (e.g., "Loan Approved").
+4.  **Dispatch**: Novu processes the event and routes the payload to Firebase (FCM), targeting the stored Token.
+5.  **Transmission**: Firebase pushes the data to the user's browser.
+6.  **Reception**:
+    - **Foreground**: Application handles the event directly.
+    - **Background**: `firebase-messaging-sw.js` wakes up, intercepts the payload, and generates the system notification.
+7.  **Display**: The user views the notification on their device.
+
+---
+
+## 2. Chat Workflow Implementation
+
+The application logic is built around a **State Machine** pattern managed via **Redux Toolkit**.
+
+### Core Architecture
+- **State Management**: The app uses a Redux slice (`workflow-slice`) to track the current user state (e.g., `enteringPhone`, `vehiclebrandselection`).
+- **Persistence**: Application state and chat history are saved to `localStorage`. On reload, the `hydrateState` action restores the user's session exactly where they left off.
+- **Main Entry**: `app/chat/page.tsx` serves as the orchestrator. It listens to state changes and dispatches necessary actions (like sending OTPs or triggering notifications).
+
+### Key Features & Flows
+
+#### A. Login Flow
+The user must authenticate before proceeding with the application.
+1.  **States**: `unauthenticated` -> `enteringPhone` -> `sendingOtp` -> `validatingOtp` -> `authenticated`.
+2.  **Logic**:
+    -   User enters a phone number.
+    -   An OTP is simulated/sent via `sendOtpThunk`.
+    -   Upon successful validation (`loginSuccess`), the user transitions to the main application flow.
+
+#### B. Vehicle Selection
+A specialized component allowing users to drill down into specific vehicle details.
+-   **Component**: `components/inputs/vehicle-selection.tsx`
+-   **Behavior**:
+    -   **Dynamic Input**: The user selects **Brand**, then **Model**, then **Variant**.
+    -   **Freezing Logic**: Once the user moves past a selection stage (e.g., selecting a Variant), the previous inputs (Brand/Model) become "frozen" (read-only) to prevent inconsistent state changes.
+    -   **Interaction**: Updates the global `vehicleData` state in Redux.
+
+#### C. File Upload & Image Editor
+A robust modal for uploading documents (PAN Card, E-Sign).
+-   **Component**: `components/inputs/upload-modal.tsx`
+-   **Features**:
+    -   **Dual Source**: Users can choose **Scan** (opens Camera on mobile) or **Upload** (System File Picker).
+    -   **Image Processing**:
+        -   Uses `react-easy-crop` for cropping images.
+        -   Includes a **"Skip"** button to bypass editing if the image is already perfect.
+        -   Generates client-side previews using `URL.createObjectURL`.
+    -   **Upload List**: Displays thumbnails, file names, and success status indicators.

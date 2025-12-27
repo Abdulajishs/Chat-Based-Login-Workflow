@@ -1,5 +1,6 @@
-import { MessageList } from "@/components/chat/MessageList";
-import { ChatInput } from "@/components/chat/ChatInput";
+import { MessageList } from "@/components/chat/message-list";
+import { ChatInput } from "@/components/chat/chat-input";
+import UserActivity from "@/components/chat/user-activity";
 
 export function ChatContainer({
   state,
@@ -11,7 +12,7 @@ export function ChatContainer({
 }: any) {
   return (
     <div className="h-screen flex justify-center bg-gray-600">
-      <div className="flex flex-col w-full max-w-md bg-black shadow">
+      <div className="relative flex flex-col w-full max-w-md bg-black shadow">
         <MessageList
           messages={messages}
           state={state}
@@ -21,6 +22,7 @@ export function ChatContainer({
           setWorkflowState={setWorkflowState}
         />
         <ChatInput state={state} onSubmit={sendUserMessage} />
+        <UserActivity />
       </div>
     </div>
   );

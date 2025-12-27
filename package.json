@@ -9,10 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@novu/api": "^3.11.2",
+    "@novu/node": "^2.6.6",
+    "@novu/notification-center": "^2.0.0",
     "@reduxjs/toolkit": "^2.11.2",
+    "firebase": "^12.7.0",
+    "lucide-react": "^0.562.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-easy-crop": "^5.5.6",
     "react-redux": "^9.2.0",
     "zod": "^4.2.1"
   },

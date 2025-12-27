@@ -5,7 +5,7 @@ export const SYSTEM_MESSAGES: Record<WorkflowState, string | null> = {
     enteringPhone: "Please enter your mobile number",
     sendingOtp: null,
     waitingForOtp: "OTP sent. Please enter OTP",
-    validatingOtp: "Validating OTP...",
+    validatingOtp: null,
     otpFailed: "Incorrect OTP. Type 'resend' to get a new OTP, or enter OTP again.",
     authenticated: "Login successful",
     vehiclebrandselection: null,

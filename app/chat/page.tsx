@@ -2,15 +2,16 @@
 
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ChatContainer } from "@/components/chat/ChatContainer";
+import { triggerLoginNotification } from "@/app/actions/novu";
+import { ChatContainer } from "@/components/chat/chat-container";
 import { RootState, AppDispatch } from "@/store/store";
 import {
   updateVehicleData,
   setWorkflowState,
   loginSuccess,
   hydrateState
-} from "@/store/workflow/workflowSlice";
-import { submitUserMessage, sendOtpThunk } from "@/store/workflow/workflowThunks";
+} from "@/store/workflow/workflow-slice";
+import { submitUserMessage, sendOtpThunk } from "@/store/workflow/workflow-thunks";
 import { WorkflowState, STORAGE_KEYS } from "@/types/auth";
 
 export default function ChatPage() {
@@ -57,7 +58,11 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (state === "authenticated") {
-      const t = setTimeout(() => dispatch(loginSuccess()), 1000);
+      const t = setTimeout(() => {
+        dispatch(loginSuccess());
+        // Trigger notification
+        triggerLoginNotification("test-user-subscriber-id");
+      }, 1000);
       return () => clearTimeout(t);
     }
   }, [state, dispatch]);

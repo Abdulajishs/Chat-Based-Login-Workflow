@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WorkflowState, ChatMessage } from "@/types/auth";
-import { SYSTEM_MESSAGES } from "@/lib/workflowConfig";
+import { SYSTEM_MESSAGES } from "@/lib/workflow-config";
 
 type VehicleData = {
   brand: string;

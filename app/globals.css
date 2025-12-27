@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Novu UI Overrides - Hide Branding/DevMode Footer */
+.nt-flex.nt-items-center.nt-gap-1>.nt-text-stripes,
+.nt-flex.nt-items-center.nt-gap-1>a[href*="go.novu.co"],
+.nt-flex.nt-items-center.nt-gap-1:has(>.nt-text-stripes) {
+  display: none !important;
+}
+
+.nv-footer,
+.nc-footer,
+[class*="footer__branded"],
+[class*="footer-box"] {
+  display: none !important;
+}
