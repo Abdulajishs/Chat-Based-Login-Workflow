@@ -4,7 +4,7 @@ import { NovuProvider } from '@novu/notification-center';
 import { useEffect, useState } from 'react';
 import { getToken } from "firebase/messaging";
 import { messaging } from '@/lib/firebase';
-import { registerFcmToken } from '@/app/actions/fcm';
+import { registerFcmToken } from '@/app/actions/novu-actions';
 import { CustomNotificationBell } from './custom-notification-bell';
 
 import { NOVU_CONFIG, SUBSCRIBER_ID } from '@/utils/constants';

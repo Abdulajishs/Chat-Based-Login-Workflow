@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { triggerLoginNotification } from "@/app/actions/novu";
+import { triggerLoginNotification } from "@/app/actions/novu-actions";
 import { ChatContainer } from "@/components/chat/chat-container";
 import { RootState, AppDispatch } from "@/store/store";
 import {
