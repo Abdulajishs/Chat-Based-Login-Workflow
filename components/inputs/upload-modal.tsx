@@ -129,7 +129,7 @@ export default function UploadModal({
     // 1. Editor View
     if (selectedFileObj) {
         return (
-            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="fixed inset-0 z-100 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
                 <div className="w-full h-full sm:h-[600px] sm:w-[500px] bg-[#1e293b] sm:rounded-xl overflow-hidden flex flex-col animate-slide-up">
                     <div className="bg-[#0f172a] text-white p-4 flex items-center justify-between z-10 shadow-md">
                         <button
@@ -198,7 +198,7 @@ export default function UploadModal({
 
     // 2. Main List View
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm duration-200">
+        <div className="fixed inset-0 z-100 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm duration-200">
             <div className="w-full h-[85vh] sm:h-[600px] sm:w-[500px] bg-white rounded-t-2xl sm:rounded-xl overflow-hidden flex flex-col shadow-2xl">
 
                 <div className="bg-blue-900 text-white p-4 flex items-center justify-between shadow-md shrink-0">
