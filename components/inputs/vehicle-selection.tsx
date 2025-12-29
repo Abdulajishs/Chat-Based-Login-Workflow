@@ -1,5 +1,5 @@
 
-import { WorkflowState } from "@/types/auth";
+import { WorkflowState, WorkflowStates } from "@/types/auth";
 import { VEHICLE_OPTIONS } from "@/types/vehicles";
 import { ChangeEvent } from "react";
 
@@ -24,9 +24,9 @@ export default function VehicleSelection({
 }: VehicleSelectionProps) {
 
     const isSelectionActive = [
-        "vehiclebrandselection",
-        "vehiclemodelselection",
-        "vehiclevariantselection"
+        WorkflowStates.VEHICLE_BRAND_SELECTION,
+        WorkflowStates.VEHICLE_MODEL_SELECTION,
+        WorkflowStates.VEHICLE_VARIANT_SELECTION
     ].includes(state);
 
     const isFrozen = !isSelectionActive;
@@ -34,22 +34,22 @@ export default function VehicleSelection({
     const handleBrandChange = (e: ChangeEvent<HTMLSelectElement>) => {
         if (isFrozen) return;
         const val = e.target.value;
-        if (state === "vehiclebrandselection") {
+        if (state === WorkflowStates.VEHICLE_BRAND_SELECTION) {
             onInteract(val);
         } else {
             setVehicleData((prev: any) => ({ ...prev, brand: val, model: "", variant: "" }));
-            setWorkflowState("vehiclemodelselection");
+            setWorkflowState(WorkflowStates.VEHICLE_MODEL_SELECTION);
         }
     };
 
     const handleModelChange = (e: ChangeEvent<HTMLSelectElement>) => {
         if (isFrozen) return;
         const val = e.target.value;
-        if (state === "vehiclemodelselection") {
+        if (state === WorkflowStates.VEHICLE_VARIANT_SELECTION) {
             onInteract(val);
         } else {
             setVehicleData((prev: any) => ({ ...prev, model: val, variant: "" }));
-            setWorkflowState("vehiclevariantselection");
+            setWorkflowState(WorkflowStates.VEHICLE_VARIANT_SELECTION);
         }
     };
 

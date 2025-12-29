@@ -12,7 +12,7 @@ import {
   hydrateState
 } from "@/store/workflow/workflow-slice";
 import { submitUserMessage, sendOtpThunk } from "@/store/workflow/workflow-thunks";
-import { WorkflowState, STORAGE_KEYS } from "@/types/auth";
+import { WorkflowState, STORAGE_KEYS, WorkflowStates } from "@/types/auth";
 import { SUBSCRIBER_ID } from "@/utils/constants";
 
 export default function ChatPage() {
@@ -31,13 +31,13 @@ export default function ChatPage() {
         messages: JSON.parse(savedMessages)
       }));
     } else {
-      dispatch(hydrateState({ state: "unauthenticated", messages: [] }));
+      dispatch(hydrateState({ state: WorkflowStates.UNAUTHENTICATED, messages: [] }));
     }
   }, [dispatch]);
 
   useEffect(() => {
     if (!hydrated) return;
-    if (state !== "unauthenticated") return;
+    if (state !== WorkflowStates.UNAUTHENTICATED) return;
 
     // Simulate session check
     const checkSession = async () => {
@@ -45,20 +45,20 @@ export default function ChatPage() {
       if (hasSession) {
         dispatch(loginSuccess());
       } else {
-        if (state === "unauthenticated") dispatch(setWorkflowState("enteringPhone"));
+        if (state === WorkflowStates.UNAUTHENTICATED) dispatch(setWorkflowState(WorkflowStates.ENTERING_PHONE));
       }
     };
     checkSession();
   }, [hydrated, state, dispatch]);
 
   useEffect(() => {
-    if (state === "sendingOtp") {
+    if (state === WorkflowStates.SENDING_OTP) {
       dispatch(sendOtpThunk());
     }
   }, [state, dispatch]);
 
   useEffect(() => {
-    if (state === "authenticated") {
+    if (state === WorkflowStates.AUTHENTICATED) {
       const t = setTimeout(() => {
         dispatch(loginSuccess());
         // Trigger notification

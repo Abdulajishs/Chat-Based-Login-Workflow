@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { WorkflowState, ChatMessage } from "@/types/auth";
+import { WorkflowState, ChatMessage, WorkflowStates, MessageFrom, MessageType } from "@/types/auth";
 import { SYSTEM_MESSAGES } from "@/lib/workflow-config";
 
 type VehicleData = {
@@ -16,7 +16,7 @@ interface WorkflowSliceState {
 }
 
 const initialState: WorkflowSliceState = {
-  state: "unauthenticated",
+  state: WorkflowStates.UNAUTHENTICATED,
   messages: [],
   vehicleData: { brand: "", model: "", variant: "" },
   hydrated: false,
@@ -28,16 +28,16 @@ const pushSystemMessage = (state: WorkflowSliceState, newState: WorkflowState) =
 
   if (msgText) {
     state.messages.push({
-      from: "system",
+      from: MessageFrom.SYSTEM,
       text: msgText,
-      isError: newState === "otpFailed"
+      isError: newState === WorkflowStates.OTP_FAILED
     });
   }
 
-  if (newState === "vehiclebrandselection") {
-    const hasVehicleMsg = state.messages.some(m => m.type === "VEHICLE_SELECTION");
+  if (newState === WorkflowStates.VEHICLE_BRAND_SELECTION) {
+    const hasVehicleMsg = state.messages.some(m => m.type === MessageType.VEHICLE_SELECTION);
     if (!hasVehicleMsg) {
-      state.messages.push({ from: "system", type: "VEHICLE_SELECTION" });
+      state.messages.push({ from: MessageFrom.SYSTEM, type: MessageType.VEHICLE_SELECTION });
     }
   }
 };
@@ -53,7 +53,7 @@ const workflowSlice = createSlice({
     },
 
     logout(state) {
-      state.state = "unauthenticated";
+      state.state = WorkflowStates.UNAUTHENTICATED;
       state.messages = [];
       state.vehicleData = { brand: "", model: "", variant: "" };
     },
@@ -68,42 +68,42 @@ const workflowSlice = createSlice({
     },
 
     enterPhone(state, action: PayloadAction<string>) {
-      state.state = "sendingOtp";
-      pushSystemMessage(state, "sendingOtp");
+      state.state = WorkflowStates.SENDING_OTP;
+      pushSystemMessage(state, WorkflowStates.SENDING_OTP);
     },
 
     loginSuccess(state) {
-      state.state = "vehiclebrandselection";
-      pushSystemMessage(state, "vehiclebrandselection");
+      state.state = WorkflowStates.VEHICLE_BRAND_SELECTION;
+      pushSystemMessage(state, WorkflowStates.VEHICLE_BRAND_SELECTION);
     },
 
     selectVehicleBrand(state, action: PayloadAction<string>) {
       state.vehicleData = { brand: action.payload, model: "", variant: "" };
-      state.state = "vehiclemodelselection";
-      pushSystemMessage(state, "vehiclemodelselection");
+      state.state = WorkflowStates.VEHICLE_MODEL_SELECTION;
+      pushSystemMessage(state, WorkflowStates.VEHICLE_MODEL_SELECTION);
     },
 
     selectVehicleModel(state, action: PayloadAction<string>) {
       state.vehicleData.model = action.payload;
       state.vehicleData.variant = "";
-      state.state = "vehiclevariantselection";
-      pushSystemMessage(state, "vehiclevariantselection");
+      state.state = WorkflowStates.VEHICLE_VARIANT_SELECTION;
+      pushSystemMessage(state, WorkflowStates.VEHICLE_VARIANT_SELECTION);
     },
 
     selectVehicleVariant(state, action: PayloadAction<string>) {
       state.vehicleData.variant = action.payload;
-      state.state = "uploadpan";
-      pushSystemMessage(state, "uploadpan");
+      state.state = WorkflowStates.UPLOAD_PAN;
+      pushSystemMessage(state, WorkflowStates.UPLOAD_PAN);
     },
 
     panUploaded(state) {
-      state.state = "uploadesign";
-      pushSystemMessage(state, "uploadesign");
+      state.state = WorkflowStates.UPLOAD_ESIGN;
+      pushSystemMessage(state, WorkflowStates.UPLOAD_ESIGN);
     },
 
     esignUploaded(state) {
-      state.state = "applicationsuccess";
-      pushSystemMessage(state, "applicationsuccess");
+      state.state = WorkflowStates.APPLICATION_SUCCESS;
+      pushSystemMessage(state, WorkflowStates.APPLICATION_SUCCESS);
     },
 
     setMessages(state, action: PayloadAction<ChatMessage[]>) {

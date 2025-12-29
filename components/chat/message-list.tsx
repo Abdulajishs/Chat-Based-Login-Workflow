@@ -1,4 +1,4 @@
-import { ChatMessage } from "@/types/auth";
+import { ChatMessage, WorkflowStates } from "@/types/auth";
 import { useEffect, useRef } from "react";
 import { WorkflowState } from "@/types/auth";
 import ChatImageUploader from "@/components/inputs/chat-image-uploader";
@@ -28,7 +28,7 @@ export function MessageList({
   }, [messages, state]);
 
   const renderActiveInput = () => {
-    if (state === "sendingOtp" || state === "validatingOtp") {
+    if (state === WorkflowStates.SENDING_OTP || state === WorkflowStates.VALIDATING_OTP) {
       return (
         <div className="flex items-center gap-2 text-gray-600 text-sm">
           <span className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
@@ -37,7 +37,7 @@ export function MessageList({
       );
     }
 
-    if (state === "uploadpan" || state === "uploadesign") {
+    if (state === WorkflowStates.UPLOAD_PAN || state === WorkflowStates.UPLOAD_ESIGN) {
       return (
         <div className="mt-2">
           <ChatImageUploader onSubmit={onInteract} />

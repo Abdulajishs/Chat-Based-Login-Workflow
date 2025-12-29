@@ -11,25 +11,25 @@ import {
     esignUploaded,
     logout
 } from "./workflow-slice";
-import { STORAGE_KEYS } from "@/types/auth";
+import { CommandType, MessageFrom, STORAGE_KEYS, WorkflowStates } from "@/types/auth";
 import { phoneSchema, otpSchema } from "@/utils/validation";
 
 export const sendOtpThunk = createAsyncThunk<void, void, { dispatch: AppDispatch; state: RootState }>(
     "workflow/sendOtp", async (_, { dispatch }) => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        dispatch(setWorkflowState("waitingForOtp"));
+        dispatch(setWorkflowState(WorkflowStates.WAITING_FOR_OTP));
     });
 
 export const validateOtpThunk = createAsyncThunk<void, string, { dispatch: AppDispatch }>(
     "workflow/validateOtp", async (otp, { dispatch }) => {
-        dispatch(setWorkflowState("validatingOtp"));
+        dispatch(setWorkflowState(WorkflowStates.VALIDATING_OTP));
 
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
         if (otp === "123456") {
-            dispatch(setWorkflowState("authenticated"));
+            dispatch(setWorkflowState(WorkflowStates.AUTHENTICATED));
         } else {
-            dispatch(setWorkflowState("otpFailed"));
+            dispatch(setWorkflowState(WorkflowStates.OTP_FAILED));
         }
     });
 
@@ -46,27 +46,27 @@ export const submitUserMessage = createAsyncThunk<void, string | File, { dispatc
             messageText = String(input);
         }
 
-        const isVehicleSelection = ["vehiclebrandselection", "vehiclemodelselection"].includes(state);
+        const isVehicleSelection = [WorkflowStates.VEHICLE_BRAND_SELECTION, WorkflowStates.VEHICLE_MODEL_SELECTION].includes(state);
 
         if (!isVehicleSelection) {
             let finalMessage = messageText;
-            if (state === "vehiclevariantselection") {
+            if (state === WorkflowStates.VEHICLE_VARIANT_SELECTION) {
                 const variant = String(input).trim();
                 finalMessage = `Brand: ${vehicleData.brand} - Model: ${vehicleData.model} - Variant: ${variant}`;
             }
-            dispatch(addMessage({ from: "user", text: finalMessage }));
+            dispatch(addMessage({ from: MessageFrom.USER, text: finalMessage }));
         }
 
 
         if (input instanceof File) {
-            if (state === "uploadpan") dispatch(panUploaded());
-            if (state === "uploadesign") dispatch(esignUploaded());
+            if (state === WorkflowStates.UPLOAD_PAN) dispatch(panUploaded());
+            if (state === WorkflowStates.UPLOAD_ESIGN) dispatch(esignUploaded());
             return;
         }
 
         const textInput = String(input).trim();
 
-        if (textInput.toLowerCase() === "logout") {
+        if (textInput.toLowerCase() === CommandType.LOGOUT) {
             dispatch(logout());
             localStorage.removeItem(STORAGE_KEYS.WORKFLOW_STATE);
             localStorage.removeItem(STORAGE_KEYS.WORKFLOW_MESSAGES);
@@ -75,24 +75,24 @@ export const submitUserMessage = createAsyncThunk<void, string | File, { dispatc
 
         // State Specific Logic
         switch (state) {
-            case "enteringPhone":
+            case WorkflowStates.ENTERING_PHONE:
                 const phoneCheck = phoneSchema.safeParse(textInput);
                 if (!phoneCheck.success) {
-                    dispatch(addMessage({ from: "system", text: phoneCheck.error.issues[0].message, isError: true }));
+                    dispatch(addMessage({ from: MessageFrom.SYSTEM, text: phoneCheck.error.issues[0].message, isError: true }));
                 } else {
                     dispatch(enterPhone(textInput));
                 }
                 break;
 
-            case "waitingForOtp":
-            case "otpFailed":
-                if (state === "otpFailed" && textInput.toLowerCase() === "resend") {
-                    dispatch(setWorkflowState("sendingOtp"));
+            case WorkflowStates.WAITING_FOR_OTP:
+            case WorkflowStates.OTP_FAILED:
+                if (state === WorkflowStates.OTP_FAILED && textInput.toLowerCase() === CommandType.RESEND) {
+                    dispatch(setWorkflowState(WorkflowStates.SENDING_OTP));
                     return;
                 }
                 const otpCheck = otpSchema.safeParse(textInput);
                 if (!otpCheck.success) {
-                    dispatch(addMessage({ from: "system", text: otpCheck.error.issues[0].message, isError: true }));
+                    dispatch(addMessage({ from: MessageFrom.SYSTEM, text: otpCheck.error.issues[0].message, isError: true }));
                 } else {
                     // Dispatch the separate validation thunk
                     dispatch(validateOtpThunk(textInput));

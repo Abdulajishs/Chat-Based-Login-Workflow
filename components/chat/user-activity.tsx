@@ -4,7 +4,7 @@ import { History, Check, X } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { WorkflowState } from "@/types/auth";
+import { WorkflowState, WorkflowStates } from "@/types/auth";
 
 export default function UserActivity() {
     const [isOpen, setIsOpen] = useState(false);
@@ -15,36 +15,36 @@ export default function UserActivity() {
             id: 1,
             label: "Login completed",
             isCompleted: (s: WorkflowState) => [
-                "vehiclebrandselection", "vehiclemodelselection", "vehiclevariantselection",
-                "uploadpan", "uploadesign", "applicationsuccess"
+                WorkflowStates.VEHICLE_BRAND_SELECTION, WorkflowStates.VEHICLE_MODEL_SELECTION, WorkflowStates.VEHICLE_VARIANT_SELECTION,
+                WorkflowStates.UPLOAD_PAN, WorkflowStates.UPLOAD_ESIGN, WorkflowStates.APPLICATION_SUCCESS
             ].includes(s)
         },
         {
             id: 2,
             label: "Vehicle selection",
             isCompleted: (s: WorkflowState) => [
-                "uploadpan", "uploadesign", "applicationsuccess"
+                WorkflowStates.UPLOAD_PAN, WorkflowStates.UPLOAD_ESIGN, WorkflowStates.APPLICATION_SUCCESS
             ].includes(s)
         },
         {
             id: 3,
             label: "Upload PAN",
             isCompleted: (s: WorkflowState) => [
-                "uploadesign", "applicationsuccess"
+                WorkflowStates.UPLOAD_ESIGN, WorkflowStates.APPLICATION_SUCCESS
             ].includes(s)
         },
         {
             id: 4,
             label: "Upload Esign",
             isCompleted: (s: WorkflowState) => [
-                "applicationsuccess"
+                WorkflowStates.APPLICATION_SUCCESS
             ].includes(s)
         },
         {
             id: 5,
             label: "Application submitted",
             isCompleted: (s: WorkflowState) => [
-                "applicationsuccess"
+                WorkflowStates.APPLICATION_SUCCESS
             ].includes(s)
         }
     ];
