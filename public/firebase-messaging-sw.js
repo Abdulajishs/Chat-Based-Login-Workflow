@@ -18,13 +18,9 @@ const messaging = firebase.messaging();
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    // Novu usually sends 'cta.data.url' in payload.data
-    // Or sometimes nested as payload.data.cta if flattened.
-    // We try to find a URL to open.
     const data = event.notification.data;
     let urlToOpen = '/';
 
-    // Try parsing cta if it's a string (common in some FCM payloads)
     if (typeof data.cta === 'string') {
         try {
             const ctaObj = JSON.parse(data.cta);

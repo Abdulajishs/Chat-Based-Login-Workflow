@@ -103,3 +103,15 @@ A robust modal for uploading documents (PAN Card, E-Sign).
         -   Includes a **"Skip"** button to bypass editing if the image is already perfect.
         -   Generates client-side previews using `URL.createObjectURL`.
     -   **Upload List**: Displays thumbnails, file names, and success status indicators.
+
+
+ ## Node Setup
+
+This project uses Node.js 20.11.1.
+
+### Using nvm
+```bash
+nvm install
+nvm use
+npm install
+npm run dev   

@@ -42,7 +42,7 @@ if (isServer) {
     const parsed = mergedSchema.safeParse(processEnv);
 
     if (!parsed.success) {
-        console.error('❌ Invalid environment variables:\n', z.prettifyError(parsed.error));
+        console.error('Invalid environment variables:\n', z.prettifyError(parsed.error));
         console.debug('Error Details:', JSON.stringify(z.treeifyError(parsed.error), null, 2));
         throw new Error('Invalid environment variables');
     }
@@ -51,7 +51,7 @@ if (isServer) {
     const parsed = clientSchema.safeParse(processEnv);
 
     if (!parsed.success) {
-        console.error('❌ Invalid client environment variables:\n', z.prettifyError(parsed.error));
+        console.error('Invalid client environment variables:\n', z.prettifyError(parsed.error));
         throw new Error('Invalid environment variables');
     }
 
