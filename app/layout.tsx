@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { Providers } from "./provider";
+import { Providers } from "@/app/provider";
 import { NovuIntegration } from "@/components/novu/novu-integration";
 
 export const metadata: Metadata = {
