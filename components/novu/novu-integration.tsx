@@ -7,9 +7,8 @@ import { messaging } from '@/lib/firebase';
 import { registerFcmToken } from '@/app/actions/fcm';
 import { CustomNotificationBell } from './custom-notification-bell';
 
-import { NOVU_CONFIG } from '@/utils/constants';
+import { NOVU_CONFIG, SUBSCRIBER_ID } from '@/utils/constants';
 
-const SUBSCRIBER_ID = "test-user-subscriber-id";
 
 export const NovuIntegration = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -21,7 +20,7 @@ export const NovuIntegration = () => {
             if ('serviceWorker' in navigator) {
                 try {
                     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-                    console.log('Firebase SW registered with scope:', registration.scope);
+                    // console.log('Firebase SW registered with scope:', registration.scope);
                 } catch (err) {
                     console.error('Firebase SW registration failed:', err);
                 }
@@ -43,7 +42,7 @@ export const NovuIntegration = () => {
                     });
 
                     if (currentToken) {
-                        console.log('FCM Token:', currentToken);
+                        // console.log('FCM Token:', currentToken);
                         // Register this token with Novu backend
                         await registerFcmToken(SUBSCRIBER_ID, currentToken);
                     } else {

@@ -13,6 +13,7 @@ import {
 } from "@/store/workflow/workflow-slice";
 import { submitUserMessage, sendOtpThunk } from "@/store/workflow/workflow-thunks";
 import { WorkflowState, STORAGE_KEYS } from "@/types/auth";
+import { SUBSCRIBER_ID } from "@/utils/constants";
 
 export default function ChatPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -61,7 +62,7 @@ export default function ChatPage() {
       const t = setTimeout(() => {
         dispatch(loginSuccess());
         // Trigger notification
-        triggerLoginNotification("test-user-subscriber-id");
+        triggerLoginNotification(SUBSCRIBER_ID);
       }, 1000);
       return () => clearTimeout(t);
     }

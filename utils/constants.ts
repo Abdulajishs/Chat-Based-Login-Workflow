@@ -8,6 +8,8 @@ export const formatFileSize = (bytes: number) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
+export const SUBSCRIBER_ID = "test-user-subscriber-id";
+
 export const NOVU_CONFIG = {
     APP_ID: env.NEXT_PUBLIC_NOVU_APP_ID,
     API_URL: env.NEXT_PUBLIC_NOVU_API_URL,
