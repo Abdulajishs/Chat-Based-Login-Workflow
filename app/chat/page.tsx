@@ -13,6 +13,7 @@ import {
 } from "@/store/workflow/workflow-slice";
 import { submitUserMessage, sendOtpThunk } from "@/store/workflow/workflow-thunks";
 import { WorkflowState, STORAGE_KEYS, WorkflowStates } from "@/types/auth";
+import { hydrationSchema } from "@/utils/validation";
 import { SUBSCRIBER_ID } from "@/utils/constants";
 
 export default function ChatPage() {
@@ -24,12 +25,32 @@ export default function ChatPage() {
   useEffect(() => {
     const savedState = localStorage.getItem(STORAGE_KEYS.WORKFLOW_STATE);
     const savedMessages = localStorage.getItem(STORAGE_KEYS.WORKFLOW_MESSAGES);
+    const savedVehicleData = localStorage.getItem(STORAGE_KEYS.WORKFLOW_VEHICLE_DATA);
 
     if (savedState && savedMessages) {
-      dispatch(hydrateState({
-        state: savedState as WorkflowState,
-        messages: JSON.parse(savedMessages)
-      }));
+      try {
+        const parsedMessages = JSON.parse(savedMessages);
+        const parsedVehicleData = savedVehicleData ? JSON.parse(savedVehicleData) : undefined;
+
+        const result = hydrationSchema.safeParse({
+          state: savedState,
+          messages: parsedMessages,
+          vehicleData: parsedVehicleData
+        });
+
+        if (result.success) {
+          dispatch(hydrateState(result.data as any));
+        } else {
+          console.error("Hydration validation failed:", result.error);
+          localStorage.removeItem(STORAGE_KEYS.WORKFLOW_STATE);
+          localStorage.removeItem(STORAGE_KEYS.WORKFLOW_MESSAGES);
+          localStorage.removeItem(STORAGE_KEYS.WORKFLOW_VEHICLE_DATA);
+          dispatch(hydrateState({ state: WorkflowStates.UNAUTHENTICATED, messages: [] }));
+        }
+      } catch (error) {
+        console.error("Hydration parsing failed:", error);
+        dispatch(hydrateState({ state: WorkflowStates.UNAUTHENTICATED, messages: [] }));
+      }
     } else {
       dispatch(hydrateState({ state: WorkflowStates.UNAUTHENTICATED, messages: [] }));
     }

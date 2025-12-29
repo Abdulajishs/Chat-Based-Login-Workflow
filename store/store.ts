@@ -13,6 +13,7 @@ if (typeof window !== "undefined") {
         const state = store.getState().workflow;
         localStorage.setItem(STORAGE_KEYS.WORKFLOW_STATE, state.state);
         localStorage.setItem(STORAGE_KEYS.WORKFLOW_MESSAGES, JSON.stringify(state.messages));
+        localStorage.setItem(STORAGE_KEYS.WORKFLOW_VEHICLE_DATA, JSON.stringify(state.vehicleData));
     });
 }
 

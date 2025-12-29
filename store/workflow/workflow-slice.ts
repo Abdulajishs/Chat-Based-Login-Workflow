@@ -46,9 +46,12 @@ const workflowSlice = createSlice({
   name: "workflow",
   initialState,
   reducers: {
-    hydrateState(state, action: PayloadAction<{ state: WorkflowState; messages: ChatMessage[] }>) {
+    hydrateState(state, action: PayloadAction<{ state: WorkflowState; messages: ChatMessage[]; vehicleData?: VehicleData }>) {
       state.state = action.payload.state;
       state.messages = action.payload.messages;
+      if (action.payload.vehicleData) {
+        state.vehicleData = action.payload.vehicleData;
+      }
       state.hydrated = true;
     },
 
