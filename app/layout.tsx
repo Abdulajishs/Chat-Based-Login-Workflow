@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Providers } from "@/app/Provider";
+import { Providers } from "@/app/provider";
 import { NovuIntegration } from "@/components/novu/novu-integration";
 
 export const metadata: Metadata = {

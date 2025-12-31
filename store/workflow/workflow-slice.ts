@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WorkflowState, ChatMessage, WorkflowStates, MessageFrom, MessageType } from "@/types/auth";
 import { SYSTEM_MESSAGES } from "@/lib/workflow-config";
+import { chatMessageSchema } from "@/utils/validation";
 
 type VehicleData = {
   brand: string;
@@ -62,7 +63,12 @@ const workflowSlice = createSlice({
     },
 
     addMessage(state, action: PayloadAction<ChatMessage>) {
-      state.messages.push(action.payload);
+      const result = chatMessageSchema.safeParse(action.payload);
+      if (result.success) {
+        state.messages.push(action.payload);
+      } else {
+        console.error("Invalid message payload:", result.error);
+      }
     },
 
     setWorkflowState(state, action: PayloadAction<WorkflowState>) {

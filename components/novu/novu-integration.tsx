@@ -22,7 +22,7 @@ export const NovuIntegration = () => {
                     const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
                     // console.log('Firebase SW registered with scope:', registration.scope);
                 } catch (err) {
-                    console.error('Firebase SW registration failed:', err);
+                    // console.error('Firebase SW registration failed:', err);
                 }
             }
         };
@@ -50,7 +50,7 @@ export const NovuIntegration = () => {
                     }
                 }
             } catch (error) {
-                console.error('An error occurred while retrieving token:', error);
+                // console.error('An error occurred while retrieving token:', error);
             }
         };
 

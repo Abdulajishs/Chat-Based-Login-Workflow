@@ -105,7 +105,35 @@ A robust modal for uploading documents (PAN Card, E-Sign).
     -   **Upload List**: Displays thumbnails, file names, and success status indicators.
 
 
- ## Node Setup
+ 
+## 3. Robust Data Validation with Zod
+
+The application enforces strict runtime data validation using **Zod** schemas, ensuring that state rehydration and user inputs are always predictable and type-safe.
+
+-   **Location**: `utils/validation.ts`
+-   **Core Schemas**:
+    -   **`hydrationSchema`**: Critical for validating the Redux state loaded from `localStorage`. It prevents the app from crashing due to stale or malformed persisted data.
+    -   **`vehicleDataSchema`**: Ensures vehicle selections (Brand/Model/Variant) match the predefined allowable options.
+    -   **`phoneSchema` & `otpSchema`**: regex-based validators for auth inputs.
+    -   **Helper Utilities**: Custom functions like `createNativeEnumSchema` and `createEnumFromOptions` streamline schema creation from TypeScript enums.
+
+## 4. Error Handling Strategy
+
+We utilize Next.js 13+ native error boundaries to manage runtime exceptions and 404 states gracefully, prohibiting the app from crashing completely.
+
+### Global Error Boundary (`app/error.tsx`)
+-   **Type**: Client Component (`use client`)
+-   **Functionality**:
+    -   Wraps the route segments to catch errors during rendering.
+    -   Logs errors to the console for debugging.
+    -   Renders a fallback UI with a **"Try again"** button, allowing users to attempt to recover the segment via the `reset()` function.
+
+### Not Found Handler (`app/not-found.tsx`)
+-   **Functionality**:
+    -   Automatically renders when a resource or route is missing.
+    -   Provides a clean "Not Found" interface with a redirect link to the homepage, replacing the default Next.js 404 page.
+
+## Node Setup
 
 This project uses Node.js 20.11.1.
 

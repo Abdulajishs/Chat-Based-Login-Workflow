@@ -12,7 +12,8 @@ import {
     logout
 } from "./workflow-slice";
 import { CommandType, MessageFrom, STORAGE_KEYS, WorkflowStates } from "@/types/auth";
-import { phoneSchema, otpSchema } from "@/utils/validation";
+import { phoneSchema, otpSchema, fileSchema } from "@/utils/validation";
+import { VEHICLE_OPTIONS } from "@/types/vehicles";
 
 export const sendOtpThunk = createAsyncThunk<void, void, { dispatch: AppDispatch; state: RootState }>(
     "workflow/sendOtp", async (_, { dispatch }) => {
@@ -59,6 +60,12 @@ export const submitUserMessage = createAsyncThunk<void, string | File, { dispatc
 
 
         if (input instanceof File) {
+            const fileCheck = fileSchema.safeParse(input);
+            if (!fileCheck.success) {
+                dispatch(addMessage({ from: MessageFrom.SYSTEM, text: "Invalid file format.", isError: true }));
+                return;
+            }
+
             if (state === WorkflowStates.UPLOAD_PAN) dispatch(panUploaded());
             if (state === WorkflowStates.UPLOAD_ESIGN) dispatch(esignUploaded());
             return;
@@ -100,15 +107,27 @@ export const submitUserMessage = createAsyncThunk<void, string | File, { dispatc
                 break;
 
             case "vehiclebrandselection":
-                if (textInput) dispatch(selectVehicleBrand(textInput));
+                if (VEHICLE_OPTIONS.vehiclebrandselection.includes(textInput)) {
+                    dispatch(selectVehicleBrand(textInput));
+                } else {
+                    dispatch(addMessage({ from: MessageFrom.SYSTEM, text: "Invalid Brand selected.", isError: true }));
+                }
                 break;
 
             case "vehiclemodelselection":
-                if (textInput) dispatch(selectVehicleModel(textInput));
+                if (VEHICLE_OPTIONS.vehiclemodelselection.includes(textInput)) {
+                    dispatch(selectVehicleModel(textInput));
+                } else {
+                    dispatch(addMessage({ from: MessageFrom.SYSTEM, text: "Invalid Model selected.", isError: true }));
+                }
                 break;
 
             case "vehiclevariantselection":
-                if (textInput) dispatch(selectVehicleVariant(textInput));
+                if (VEHICLE_OPTIONS.vehiclevariantselection.includes(textInput)) {
+                    dispatch(selectVehicleVariant(textInput));
+                } else {
+                    dispatch(addMessage({ from: MessageFrom.SYSTEM, text: "Invalid Variant selected.", isError: true }));
+                }
                 break;
 
             default:
